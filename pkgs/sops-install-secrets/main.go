@@ -243,10 +243,14 @@ func decryptSecret(s *secret, sourceFiles map[string]plainData) error {
 
 func decryptSecrets(secrets []secret) error {
 	sourceFiles := make(map[string]plainData)
+	errors := []error{}
 	for i := range secrets {
 		if err := decryptSecret(&secrets[i], sourceFiles); err != nil {
-			return err
+			errors = append(errors, err)
 		}
+	}
+	if len(errors) > 0 {
+		return fmt.Errorf("Could not install all secrets: %v", errors)
 	}
 	return nil
 }
